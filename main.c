@@ -5,13 +5,15 @@
 #include <phidget22.h>
 
 
+
 int main(){
 	
 	printf("Main running\n" );
 	printf("Opening output files..\n" );
 	//Open up output files. Stop the program if the open-action fails
-	FILE *input = fopen("input.dat","w");
-	FILE *position = fopen("position.dat","w");
+	input = fopen("input.dat","w");
+	position = fopen("position.dat","w");
+	target = fopen("target.dat","w");
 	if ((input == NULL) || (position == NULL)){
 		printf("The output files could not be opened. Exiting program..");
 		exit(0);
@@ -25,6 +27,7 @@ int main(){
 	//Get user input for reference position in pool
 
 	float reference = 0.0;
+	fprintf(input, "%f\n",reference);
 	printf("Select desired position between 20 and 180\n");
 	scanf("%f",&reference);
 	while ((reference<20)|| (reference>180)){//((reference <= 20) || (reference>=180)){
@@ -42,6 +45,7 @@ int main(){
 	disconnectPhidgets();
 	fclose(input);
 	fclose(position);
+	fclose(target);
 	printf("Closing down DP. Thank you.\n");
 
 	return 0;

@@ -67,9 +67,9 @@ float computeControlInput(float pos,float ref,float dt){
 
 void runDPloop(float reference){
 	
-	
+	//static float prev_ctrl_input;
 	static struct timeval previous_time;
-
+	float dt = 0.020;
 	struct timeval tn;
 	float elapsed = 0;
 	float totaltime = 0;
@@ -80,8 +80,9 @@ void runDPloop(float reference){
 	gettimeofday(&previous_time, 0);
 	//
 	float boatPosition = 0;
-
+	float ctrl_input =computeControlInput(boatPosition,reference,dt);
 	//keep while loop until finished or aborted by user
+	int i = 0;
 	while(finished == false){
 		
 		//Timer functionality, count how long each iteration takes
@@ -93,23 +94,32 @@ void runDPloop(float reference){
    		counter += elapsed;
    		totaltime += elapsed;
    		
-   		if(counter >=0.020){
+   		if(counter >=dt){
    			//Get ship position from IOcard
    			boatPosition=getBoatPos();
 
    			//Compute new input
-   			
+   			ctrl_input =computeControlInput(boatPosition,reference,dt);
 
    			//Reset timer
    			counter = 0.0;
 
+   			//Update data files
+   			fprintf(input, "%f\n",ctrl_input);
+   			fprintf(position, "%f\n",boatPosition);
+   			fprintf(target, "%f\n",reference);
+
+
+
    		}
 
+   		//give input to motor
+   		setMotorSpeed(ctrl_input);
 
+   		i+=1;
+   		printf("%d\n",i );
 
-
-   		
-		if(totaltime >=20*1000){
+		if(totaltime >=maxTime){
 			finished=true;
 		}
 

@@ -40,6 +40,11 @@ double getBoatPos(void){
 
 }
 
+void setMotorSpeed(double ctrl_input){
+	PhidgetRCServo_setTargetPosition(motorCh,ctrl_input);
+	return;
+}
+
 
 void connectPhidgets(){
 	
