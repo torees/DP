@@ -6,6 +6,10 @@ Declare functions used by the program as well as global definitions
 
 #include<stdio.h>
 #include <phidget22.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <phidget22.h>
+#include <ctype.h>
 
 //PID- gain parameters
 #define KP 1
@@ -14,10 +18,7 @@ Declare functions used by the program as well as global definitions
 
 typedef enum{true,false} bool;
 
-//log files for saving data
-static FILE *input;
-static FILE *position;
-static FILE *target;
+
 
 
 //Define pool size (no need for depth)
@@ -37,14 +38,21 @@ FILE openFile(char selectType);
 
 void closeFiles(FILE fp);
 void runDPloop(float reference);
+void printFile(void);
 
-void connectPhidgets();
-void disconnectPhidgets();
-double getBoatPos(void);
-void setMotorSpeed(double input);
+void connectPhidgets(PhidgetRCServoHandle motorCh1);
+void disconnectPhidgets(PhidgetRCServoHandle motorCh);
+void setMotorSpeed(double ctrl_input);
+int startmotor(void);
 
-void onAttachedMotorHandler(PhidgetHandle ch, void *userPtr);
-void onAttachedIOHandler(PhidgetHandle ch, void *userPtr);
+static void CCONV onAttachedMotorHandler(PhidgetHandle phid, void *ptr);
+static void CCONV onDetachedMotorHandler(PhidgetHandle phid, void *ptr);
+static void CCONV ssleep(int seconds);
+static void CCONV motorErrorHandler(PhidgetHandle phid, void *ptr, Phidget_ErrorEventCode errorCode, const char *errorString);
+static void CCONV onPositionChangeHandler(PhidgetRCServoHandle motorCh, void *ctx, double position);
+static void CCONV onVelocityChangeHandler(PhidgetRCServoHandle motorCh, void *ctx, double velocity);
+static void CCONV onTargetPositionReachedHandler(PhidgetRCServoHandle motorCh, void *ctx, double position);
+
 
 float computeControlInput(float pos,float ref,float dt);
 float timedifference_msec(struct timeval t0, struct timeval t1);

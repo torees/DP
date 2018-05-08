@@ -18,6 +18,8 @@ Variables:
 
 
 */
+
+
 float timedifference_msec(struct timeval t0, struct timeval t1)
 {
     return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
@@ -82,7 +84,7 @@ void runDPloop(float reference){
 	float boatPosition = 0;
 	float ctrl_input =computeControlInput(boatPosition,reference,dt);
 	//keep while loop until finished or aborted by user
-	int i = 0;
+	
 	while(finished == false){
 		
 		//Timer functionality, count how long each iteration takes
@@ -96,7 +98,7 @@ void runDPloop(float reference){
    		
    		if(counter >=dt){
    			//Get ship position from IOcard
-   			boatPosition=getBoatPos();
+   			//boatPosition=getBoatPos();
 
    			//Compute new input
    			ctrl_input =computeControlInput(boatPosition,reference,dt);
@@ -105,20 +107,28 @@ void runDPloop(float reference){
    			counter = 0.0;
 
    			//Update data files
-   			fprintf(input, "%f\n",ctrl_input);
-   			fprintf(position, "%f\n",boatPosition);
-   			fprintf(target, "%f\n",reference);
+   			
+   			//fprintf(input, "%f\n",ctrl_input);
+   			//fprintf(position, "%f\n",boatPosition);
+   			//fprintf(target, "%f\n",reference);
 
 
 
    		}
+   		if (counter >= dt*10)
+   		{
+   			printf("%f\n",boatPosition );
+   			
+   		}
 
    		//give input to motor
-   		setMotorSpeed(ctrl_input);
+   		//setMotorSpeed(ctrl_input);
+   		
 
-   		i+=1;
-   		printf("%d\n",i );
-
+   		setMotorSpeed(90);
+   		
+   		
+		
 		if(totaltime >=maxTime){
 			finished=true;
 		}

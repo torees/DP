@@ -1,6 +1,6 @@
 
 BIN=DP
-SRCS=main.c outputHandler.c PIDcontrol.c phidgetsHandler.c
+SRCS=main.c outputHandler.c PIDcontrol.c phidgetsHandler.c printValues.c 
 LIBS=-lphidget22
 LIBDIR=
 INCDIR=

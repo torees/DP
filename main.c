@@ -7,6 +7,9 @@
 
 
 int main(){
+	FILE *input;
+	FILE *position;
+	FILE *target;
 	
 	printf("Main running\n" );
 	printf("Opening output files..\n" );
@@ -19,17 +22,22 @@ int main(){
 		exit(0);
 
 	}
+	//Create Phidget handles
+	PhidgetRCServoHandle motorCh;
+	
 
+	
 	//connect to the Phidget units(motor and interface kit)
-
-	connectPhidgets();
-
+	printf("Connecting Phidgets\n");
+	connectPhidgets(motorCh);
+	/*
 	//Get user input for reference position in pool
 
-	float reference = 0.0;
+	float reference = 20.0;
 	fprintf(input, "%f\n",reference);
-	printf("Select desired position between 20 and 180\n");
-	scanf("%f",&reference);
+	//printFile();
+	//printf("Select desired position between 20 and 180\n");
+	//scanf("%f",&reference);
 	while ((reference<20)|| (reference>180)){//((reference <= 20) || (reference>=180)){
 		printf("Please enter a valid position\n");
 		scanf("%f",&reference);
@@ -37,16 +45,16 @@ int main(){
 
 	//Run dynamic positioning to reference
 
-	runDPloop(reference);
+	//runDPloop(reference);
 
 	//Finish program and shut down connections. Save data files. 
 
 
-	disconnectPhidgets();
+	disconnectPhidgets(motorCh);
 	fclose(input);
 	fclose(position);
 	fclose(target);
-	printf("Closing down DP. Thank you.\n");
+	printf("Closing down DP. Thank you.\n");*/
 
 	return 0;
 }
