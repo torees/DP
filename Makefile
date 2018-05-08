@@ -1,6 +1,6 @@
 
 BIN=DP
-SRCS=main.c outputHandler.c PIDcontrol.c phidgetsHandler.c printValues.c ../Common/PhidgetHelperFunctions.c
+SRCS=main.c PIDcontrol.c phidgetsHandler.c gnuPlotter.c ../Common/PhidgetHelperFunctions.c
 LIBS=-lphidget22
 LIBDIR=
 INCDIR=-I../Common

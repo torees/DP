@@ -12,17 +12,24 @@ Declare functions used by the program as well as global definitions
 #include <ctype.h>
 
 //PID- gain parameters
-#define KP -4
-#define KI 0
-#define KD 0
+#define KP -30
+#define KI -0.2
+#define KD -0.05
+
+
+/*
+Ziegler nichols
+Ku = -50
+Tu = 0.4
+Kp = 0.6*-50 = -30
+Ki = 0.4/2 =  0.95
+Kd = 1.9 / 8 = 0.238
+*/
 
 typedef enum{true,false} bool;
 
 
 
-
-//Define pool size 
-#define Plength 60 
 
 
 //maximum runtime for test
@@ -34,20 +41,18 @@ typedef enum{true,false} bool;
 #define minvolt 3.7
 #define maxvolt 5.0
 
-//Define physical size of boat.
-#define boatLength 100
-#define boatWidth 30
-#define boatHeight 40
 
 
-FILE openFile(char selectType);
+void plotGNUposition();
+void plotGNUcontrol();
 
-void closeFiles(FILE fp);
+
+
 void runDPloop(PhidgetRCServoHandle motorCh,float reference,PhidgetVoltageInputHandle ioCh,FILE *gnuptr);
-void printFile(void);
 
-PhidgetRCServoHandle connectPhidgets(PhidgetRCServoHandle motorCh1);
-void disconnectPhidgets(PhidgetRCServoHandle motorCh);
+
+PhidgetRCServoHandle connectMotorPhidget(PhidgetRCServoHandle motorCh1);
+void disconnectMotorPhidget(PhidgetRCServoHandle motorCh);
 void disconnectIOPhidget(PhidgetVoltageInputHandle ioCh);
 void setMotorSpeed(double ctrl_input);
 PhidgetVoltageInputHandle connectIO(PhidgetVoltageInputHandle ioCh);

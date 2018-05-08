@@ -4,7 +4,14 @@
 
 #include <phidget22.h>
 
+/*
+main file. Declare datafiles and Phidget handles. 
+Get input from user and start control loop.
+Call plotting functions after run
+Close open files and call disconnecting functions for Phidgets
 
+2018 Tore Sæterdal
+*/
 
 int main(){
 	FILE *input;
@@ -32,7 +39,7 @@ int main(){
 	
 	//connect to the Phidget units(motor and interface kit)
 	printf("Connecting Phidgets\n");
-	motorCh=connectPhidgets(motorCh);
+	motorCh=connectMotorPhidget(motorCh);
 	ioCh = connectIO(ioCh);
 	
 	//Get user input for reference position in pool
@@ -41,13 +48,14 @@ int main(){
 	
 	//printFile();
 	printf("Select desired position between 0 and 60\n-1 to abort\n");
-	scanf("%f",&reference);
+	//scanf("%f",&reference);
+	reference = 30;
 	if(reference == -1){
-		disconnectPhidgets(motorCh);
+		disconnectMotorPhidget(motorCh);
 		disconnectIOPhidget(ioCh);
 		exit(0);
 	}
-	while ((reference<20)|| (reference>180)){//((reference <= 20) || (reference>=180)){
+	while ((reference<0)|| (reference>maxpos)){//((reference <= 20) || (reference>=180)){
 		printf("Please enter a valid position\n");
 		scanf("%f",&reference);
 	}
@@ -56,17 +64,19 @@ int main(){
 	
 	
 	runDPloop(motorCh,reference,ioCh,gnuPlot);
-	disconnectPhidgets(motorCh);
+	disconnectMotorPhidget(motorCh);
 	disconnectIOPhidget(ioCh);
 	
 	//Finish program and shut down connections. Save data files. 
 
 
-	disconnectPhidgets(motorCh);
+	
 	fclose(input);
 	fclose(position);
 	fclose(target);
 	fclose(gnuPlot);
+	plotGNUposition();
+	plotGNUcontrol();
 	printf("Closing down DP. Thank you.\n");
 
 	return 0;

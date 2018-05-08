@@ -8,15 +8,12 @@
 #include "DP.h"
 
 /*
-Main control loop. Runs until the boat is kept within target +- 5 cm for 10 seconds, 
-or until 30 seconds of operation. 
-
-Functions:
-
-Variables:
+PID control loop. Runs for 20 seconds, then exports data to plot
+Computes PID every 10 ms.
 
 
 
+2018 Tore Sæterdal
 */
 
 
@@ -54,7 +51,7 @@ float computeControlInput(float pos,float ref,float dt){
 	prev_pos = pos;
 
 	float ctrl_input = prop + integ + deriv;
-	//printf("%f\n",ctrl_input );
+	
 	//ensure control input is a valid servo position to avoid saturating the motor
 	if (ctrl_input<80){ctrl_input=80;}
 	if (ctrl_input>125){ctrl_input=125;}
@@ -70,9 +67,9 @@ float computeControlInput(float pos,float ref,float dt){
 
 void runDPloop(PhidgetRCServoHandle motorCh,float reference,PhidgetVoltageInputHandle ioCh,FILE *gnuptr){
 	
-	//static float prev_ctrl_input;
+	
 	static struct timeval previous_time;
-	float dt = 0.020;
+	float dt = 0.01;
 	struct timeval tn;
 	float elapsed = 0;
 	float totaltime = 0;
@@ -87,8 +84,6 @@ void runDPloop(PhidgetRCServoHandle motorCh,float reference,PhidgetVoltageInputH
 	
 	float boatPosition = getPosition(ioCh);
 	
-	//float ctrl_input =computeControlInput(boatPosition,reference,dt);
-	//keep while loop until finished or aborted by user
 	
 
 	float ctrl_input = 0;
@@ -109,7 +104,7 @@ void runDPloop(PhidgetRCServoHandle motorCh,float reference,PhidgetVoltageInputH
    			
    			//Get ship position from IOcard
    			boatPosition = getPosition(ioCh);
-   			error = boatPosition - reference;
+   			error = reference-boatPosition ;
 
    			//Compute new input
    			ctrl_input =computeControlInput(boatPosition,reference,dt);
@@ -117,24 +112,28 @@ void runDPloop(PhidgetRCServoHandle motorCh,float reference,PhidgetVoltageInputH
    			//Reset timer
    			counter = 0.0;
 
-   			//print values to file
-   			fprintf(gnuptr, "%f %d %f %lf \n",totaltime,0,error,ctrl_input );
    			
+   			//give input to motor
+   		
+   			PhidgetRCServo_setTargetPosition(motorCh,ctrl_input);
+   			
+
    			
 
 
 
    		}
-   		if (printcounter >= 0.15){
-   			printcounter = 0;
-   			printf("%f\n",boatPosition );
+   		if (printcounter >= 0.1){
+   			
+   			printcounter = 0;  
+   			//print values to file 	
+   			fprintf(gnuptr, "%f %d %f %lf \n",totaltime/1000,0,error,ctrl_input );		
+   			//For user overview during run
    			printf("Position: %f\t Reference: %f\tControl input: %f\t error: %f\t \n",boatPosition,reference,ctrl_input,error );
    		}
    		
 
-   		//give input to motor
    		
-   		PhidgetRCServo_setTargetPosition(motorCh,ctrl_input);
 
    		
    		

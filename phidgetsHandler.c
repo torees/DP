@@ -10,12 +10,7 @@ Connect and initialize Phidgets units needed for the project boat.
 Utlizing built-in functions from the libphidgets library downloaded from https://www.phidgets.com/
 Following the programming methodology of https://www.phidgets.com/docs/Phidget_Programming_Basics
 
-MotorFunctions:
-
-PotentiometerFunctions:
-
-
-Variables:
+2018 Tore Sæterdal
 */
 
 
@@ -35,19 +30,19 @@ static void CCONV onAttachedMotorHandler(PhidgetHandle phid, void *ptr){
 
 	res = Phidget_getDeviceSerialNumber(phid, &serial);
 	if (res != EPHIDGET_OK) {
-		fprintf(stderr, "failed to get device serial number\n");
-		return;
+		printf("Could not get serial number\n");
+		
 	}
 
 	res = Phidget_getChannel(phid, &channel);
 	if (res != EPHIDGET_OK) {
-		fprintf(stderr, "failed to get channel number\n");
-		return;
+		printf("Could not get channel number\n");
+		
 	}
 
 	res = Phidget_getHubPort(phid, &hubPort);
 	if (res != EPHIDGET_OK) {
-		fprintf(stderr, "failed to get hub port\n");
+		printf("Could not get hub port\n");
 		hubPort = -1;
 	}
 
@@ -105,7 +100,7 @@ static void CCONV onTargetPositionReachedHandler(PhidgetRCServoHandle motorCh, v
 	
 }
 
-PhidgetRCServoHandle connectPhidgets(PhidgetRCServoHandle motorCh){
+PhidgetRCServoHandle connectMotorPhidget(PhidgetRCServoHandle motorCh){
 	
 	//Use res variable to determine if all actions succeed
 	PhidgetReturnCode res;
@@ -315,17 +310,14 @@ double getPosition(PhidgetVoltageInputHandle ioCh){
 
 void disconnectIOPhidget(PhidgetVoltageInputHandle ioCh){
 
-	//Phidget_close((PhidgetHandle)ioCh);
- 	//Phidget_release((PhidgetHandle *)&ioCh);
+
 
  	Phidget_close((PhidgetHandle)ioCh);
  	PhidgetVoltageInput_delete(&ioCh);
 }
 
-void disconnectPhidgets(PhidgetRCServoHandle motorCh){
+void disconnectMotorPhidget(PhidgetRCServoHandle motorCh){
 
-	//Phidget_close((PhidgetHandle)ioCh);
- 	//Phidget_release((PhidgetHandle *)&ioCh);
 
  	Phidget_close((PhidgetHandle)motorCh);
  	PhidgetRCServo_delete(&motorCh);
