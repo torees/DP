@@ -54,9 +54,10 @@ float computeControlInput(float pos,float ref,float dt){
 	prev_pos = pos;
 
 	float ctrl_input = prop + integ + deriv;
+	//printf("%f\n",ctrl_input );
 	//ensure control input is a valid servo position to avoid saturating the motor
-	if (ctrl_input<107){ctrl_input=107;}
-	if (ctrl_input>199){ctrl_input=199;}
+	if (ctrl_input<80){ctrl_input=80;}
+	if (ctrl_input>125){ctrl_input=125;}
 
 
 
@@ -67,7 +68,7 @@ float computeControlInput(float pos,float ref,float dt){
 }
 
 
-void runDPloop(float reference){
+void runDPloop(PhidgetRCServoHandle motorCh,float reference,PhidgetVoltageInputHandle ioCh,FILE *gnuptr){
 	
 	//static float prev_ctrl_input;
 	static struct timeval previous_time;
@@ -76,29 +77,39 @@ void runDPloop(float reference){
 	float elapsed = 0;
 	float totaltime = 0;
 	bool finished = false;
+	float error;
 	printf("Starting DP..The controller will run until finished.\nPress 'Ctrl + C' to abort\n");
 	
 	float counter = 0.0;
+	float printcounter = 0.0;
 	gettimeofday(&previous_time, 0);
-	//
-	float boatPosition = 0;
-	float ctrl_input =computeControlInput(boatPosition,reference,dt);
+	
+	
+	float boatPosition = getPosition(ioCh);
+	
+	//float ctrl_input =computeControlInput(boatPosition,reference,dt);
 	//keep while loop until finished or aborted by user
 	
+
+	float ctrl_input = 0;
 	while(finished == false){
 		
-		//Timer functionality, count how long each iteration takes
+		
 		gettimeofday(&tn, 0);
    		elapsed = timedifference_msec(previous_time, tn);
    		previous_time = tn;
 
    		//Every 20 ms, compute new PID input
    		counter += elapsed;
+   		printcounter += elapsed;
    		totaltime += elapsed;
    		
    		if(counter >=dt){
+
+   			
    			//Get ship position from IOcard
-   			//boatPosition=getBoatPos();
+   			boatPosition = getPosition(ioCh);
+   			error = boatPosition - reference;
 
    			//Compute new input
    			ctrl_input =computeControlInput(boatPosition,reference,dt);
@@ -106,26 +117,25 @@ void runDPloop(float reference){
    			//Reset timer
    			counter = 0.0;
 
-   			//Update data files
+   			//print values to file
+   			fprintf(gnuptr, "%f %d %f %lf \n",totaltime,0,error,ctrl_input );
    			
-   			//fprintf(input, "%f\n",ctrl_input);
-   			//fprintf(position, "%f\n",boatPosition);
-   			//fprintf(target, "%f\n",reference);
+   			
 
 
 
    		}
-   		if (counter >= dt*10)
-   		{
+   		if (printcounter >= 0.15){
+   			printcounter = 0;
    			printf("%f\n",boatPosition );
-   			
+   			printf("Position: %f\t Reference: %f\tControl input: %f\t error: %f\t \n",boatPosition,reference,ctrl_input,error );
    		}
-
-   		//give input to motor
-   		//setMotorSpeed(ctrl_input);
    		
 
-   		setMotorSpeed(90);
+   		//give input to motor
+   		
+   		PhidgetRCServo_setTargetPosition(motorCh,ctrl_input);
+
    		
    		
 		
